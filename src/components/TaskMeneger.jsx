@@ -3,6 +3,8 @@ import { useState } from "react";
 export default function TaskManager() {
   const [tasks, setTasks] = useState(JSON.parse(localStorage.getItem("tasks") || "[]"));
   const [input, setInput] = useState("");
+  const [editingInput, setEditingInput] = useState("");
+  const [currentEditTask, setCurrentEditTask] = useState(null)
 
 // сохраняет
   const saveTasks = (newTasks) => {
@@ -31,6 +33,22 @@ export default function TaskManager() {
     saveTasks([]);
   };
 
+// изменение задач
+  const changeTask = (i) => {
+    const newTasks = tasks.map((t, indx) => {
+      const newT =  {...t}
+      if (i == indx){
+        return newT.text = editingInput
+      }
+      return newT
+    } );
+    saveTasks(newTasks);
+    
+  }
+
+
+// добавление дедлайна
+
   return (
     <>
       <form onSubmit={addTask}>
@@ -43,11 +61,20 @@ export default function TaskManager() {
       <ul>
         {tasks.map((t, i) => (
           <li key={i}>
-            <span style={{ textDecoration: t.done ? "line-through" : "none" }}>
+
+            {
+              currentEditTask == i ? <>
+              <input type="text" value={editingInput} onChange={(e)=> setEditingInput(e.target.value)} />
+              <button onClick={() => changeTask(i)}>сохранить</button>
+              </> : <>
+              <span style={{ textDecoration: t.done ? "line-through" : "none" }}>
               {t.text}
             </span>
             <input type="checkbox" checked={t.done} onChange={() => toggle(i)} />
-            <button onClick={() => deleteTask(i)}>удалить</button>
+            <button onClick={() => deleteTask(i)}> <img class="windows" src="cat.png" alt=""></img> </button>
+            <button onClick={() => setCurrentEditTask(i)}>изменить</button></>
+            }
+
           </li>
         ))}
       </ul>
