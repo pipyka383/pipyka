@@ -6,48 +6,43 @@ export default function TaskManager() {
   const [editingInput, setEditingInput] = useState("");
   const [currentEditTask, setCurrentEditTask] = useState(null)
 
-// сохраняет
   const saveTasks = (newTasks) => {
     setTasks(newTasks);
     localStorage.setItem('tasks', JSON.stringify(newTasks));
   };
-// добвляет 
+
   const addTask = (e) => {
     e.preventDefault();
     if (!input) return;
     saveTasks([...tasks, { text: input, done: false }]);
     setInput("");
   };
-// галочки
+
   const toggle = (i) => {
     const newTasks = [...tasks];
     newTasks[i].done = !newTasks[i].done;
     saveTasks(newTasks);
   };
-// удаляет 
+
   const deleteTask = (i) => {
     saveTasks(tasks.filter((_, index) => index !== i));
   };
-// удаляет все
+
   const clearAll = () => {
     saveTasks([]);
   };
 
-// изменение задач
   const changeTask = (i) => {
     const newTasks = tasks.map((t, indx) => {
-      const newT =  {...t}
-      if (i == indx){
-        return newT.text = editingInput
+      if (i === indx) {
+        return { ...t, text: editingInput };
       }
-      return newT
-    } );
+      return t;
+    });
     saveTasks(newTasks);
-    
+    setCurrentEditTask(null);
+    setEditingInput("");
   }
-
-
-// добавление дедлайна
 
   return (
     <>
@@ -61,20 +56,35 @@ export default function TaskManager() {
       <ul>
         {tasks.map((t, i) => (
           <li key={i}>
-
-            {
-              currentEditTask == i ? <>
-              <input type="text" value={editingInput} onChange={(e)=> setEditingInput(e.target.value)} />
-              <button onClick={() => changeTask(i)}>сохранить</button>
-              </> : <>
-              <span style={{ textDecoration: t.done ? "line-through" : "none" }}>
-              {t.text}
-            </span>
-            <input type="checkbox" checked={t.done} onChange={() => toggle(i)} />
-            <button onClick={() => deleteTask(i)}> <img class="windows" src="cat.png" alt=""></img> </button>
-            <button onClick={() => setCurrentEditTask(i)}>изменить</button></>
-            }
-
+            {currentEditTask === i ? (
+              <>
+                <input 
+                  type="text" 
+                  value={editingInput} 
+                  onChange={(e) => setEditingInput(e.target.value)} 
+                />
+                <button onClick={() => changeTask(i)}>сохранить</button>
+              </>
+            ) : (
+              <>
+                <span style={{ textDecoration: t.done ? "line-through" : "none" }}>
+                  {t.text}
+                </span>
+                <input 
+                  type="checkbox" 
+                  checked={t.done} 
+                  onChange={() => toggle(i)} 
+                />
+                <button onClick={() => deleteTask(i)}>X
+                </button>
+                <button onClick={() => {
+                  setCurrentEditTask(i);
+                  setEditingInput(t.text); 
+                }}>
+                  изменить
+                </button>
+              </>
+            )}
           </li>
         ))}
       </ul>
