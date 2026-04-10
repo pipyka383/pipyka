@@ -12,7 +12,7 @@ function App({name, age}) {
   const [count, setCount] = useState(0)
   return (
     <>
-      <Mycompanent name={'Aska'} age={'Evangelion'}></Mycompanent>
+      <Mycompanent name={'Список задач'}></Mycompanent>
       <FriendsList></FriendsList>
     </>
   )
